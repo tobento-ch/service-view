@@ -1,0 +1,1 @@
+<?php if ($view->once(__FILE__)) { ?><p>Lorem ipsum</p><?php } ?>

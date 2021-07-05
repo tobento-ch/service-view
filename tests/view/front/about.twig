@@ -1,0 +1,1 @@
+<!DOCTYPE html><html><head><title>{{ title }}</title>{{ view.assets().render()|raw }}{% do view.asset('app.css') %}{% do view.asset('js/app.js').attr('async') %}</head><body>{{ view.render('inc/header')|raw }}<h1>Twig: {{ title }}</h1><p>{{ description }}</p>{{ view.render('inc/footer')|raw }}</body></html>

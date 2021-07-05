@@ -1,0 +1,1 @@
+<?php $view->asset('service/service.js'); ?>

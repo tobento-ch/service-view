@@ -1,0 +1,1 @@
+<!DOCTYPE html><html><head><title><?= $title ?></title></head><body>Team<?= $view->render('inc/footer') ?></body></html>

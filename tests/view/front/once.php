@@ -1,0 +1,1 @@
+<!DOCTYPE html><html><head><title>Once</title></head><body><?= $view->render('inc/once') ?><?= $view->render('inc/once') ?></body></html>

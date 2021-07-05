@@ -1,0 +1,1 @@
+<!DOCTYPE html><html><head><title>Assets</title></head><body><?= $view->assets()->render() ?><?php $view->asset('app.js'); ?><?= $view->render('inc/asset') ?></body></html>
