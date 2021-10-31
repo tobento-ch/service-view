@@ -19,11 +19,11 @@ use Tobento\Service\View\ViewInterface;
 use Tobento\Service\View\Data;
 use Tobento\Service\View\DataInterface;
 use Tobento\Service\View\PhpRenderer;
-use Tobento\Service\View\Dir;
-use Tobento\Service\View\Dirs;
 use Tobento\Service\View\AssetInterface;
 use Tobento\Service\View\Assets;
 use Tobento\Service\View\AssetsInterface;
+use Tobento\Service\Dir\Dir;
+use Tobento\Service\Dir\Dirs;
 
 /**
  * ViewTest tests
@@ -34,9 +34,9 @@ class ViewTest extends TestCase
     {
         return new View(
             new PhpRenderer(
-                new Dirs([
+                new Dirs(
                     new Dir(__DIR__.'/view/front/'),
-                ])
+                )
             ),
             new Data(),
             new Assets(__DIR__.'/view/src/', 'https://www.example.com/src/')

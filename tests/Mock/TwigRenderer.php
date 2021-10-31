@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Tobento\Service\View\Test\Mock;
 
 use Tobento\Service\View\RendererInterface;
-use Tobento\Service\View\DirsInterface;
+use Tobento\Service\Dir\DirsInterface;
 use Tobento\Service\View\ViewNotFoundException;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -49,7 +49,7 @@ class TwigRenderer implements RendererInterface
         {
             $loader = new FilesystemLoader();
             
-            $dirs = array_reverse($dirs->group()->all());
+            $dirs = array_reverse($dirs->all());
             
             foreach($dirs as $dir)
             {

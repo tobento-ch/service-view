@@ -20,8 +20,8 @@ use Tobento\Service\View\Data;
 use Tobento\Service\View\DataInterface;
 use Tobento\Service\View\PhpRenderer;
 use Tobento\Service\View\ChainRenderer;
-use Tobento\Service\View\Dir;
-use Tobento\Service\View\Dirs;
+use Tobento\Service\Dir\Dir;
+use Tobento\Service\Dir\Dirs;
 use Tobento\Service\View\AssetInterface;
 use Tobento\Service\View\Assets;
 use Tobento\Service\View\AssetsInterface;
@@ -34,9 +34,9 @@ class ChainRendererTest extends TestCase
 {   
     protected function createView(): ViewInterface
     {
-        $dirs = new Dirs([
+        $dirs = new Dirs(
             new Dir(__DIR__.'/view/front/'),
-        ]);
+        );
         
         $phpRenderer = new PhpRenderer($dirs);
         

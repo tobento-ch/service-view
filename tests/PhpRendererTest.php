@@ -16,7 +16,7 @@ namespace Tobento\Service\View\Test;
 use PHPUnit\Framework\TestCase;
 use Tobento\Service\View\PhpRenderer;
 use Tobento\Service\View\RendererInterface;
-use Tobento\Service\View\Dirs;
+use Tobento\Service\Dir\Dirs;
 use Tobento\Service\View\ViewNotFoundException;
 
 /**
@@ -74,9 +74,9 @@ class PhpRendererTest extends TestCase
     {        
         $dirs = new Dirs();
         $dirs->dir(__DIR__.'/php-renderer/front/');
-        $dirs->dir(__DIR__.'/php-renderer/back/', 10);
+        $dirs->dir(dir: __DIR__.'/php-renderer/back/', priority: 10);
         
-        $renderer = new PhpRenderer($dirs);
+        $renderer = new PhpRenderer($dirs->sort());
         
         $this->assertSame(
             '<footer>Footer Back</footer>',

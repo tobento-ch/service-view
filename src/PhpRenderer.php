@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tobento\Service\View;
 
+use Tobento\Service\Dir\DirsInterface;
 use Throwable;
 
 /**
@@ -48,7 +49,7 @@ class PhpRenderer implements RendererInterface
      */
     public function render(string $view, array $data = []): string
     {            
-        foreach($this->dirs->group()->all() as $dir)
+        foreach($this->dirs->all() as $dir)
         {            
             try {
                 
@@ -74,7 +75,7 @@ class PhpRenderer implements RendererInterface
      */        
     public function exists(string $view): bool
     {
-        foreach($this->dirs->group()->all() as $dir)
+        foreach($this->dirs->all() as $dir)
         {
             if (!is_null($this->ensureView($dir->dir().$view.'.php'))) {
                 return true;

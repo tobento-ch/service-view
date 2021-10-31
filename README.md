@@ -9,7 +9,6 @@ The View Service is for creating and rendering views in a simple, yet flexible w
 	- [Highlights](#highlights)
 	- [Simple Example](#simple-example)
 - [Documentation](#documentation)
-    - [Directories](#directories)
 	- [Data](#data)
 	- [Assets](#assets)
     - [Renderer](#renderer)
@@ -64,16 +63,16 @@ public/
 ```php
 use Tobento\Service\View\View;
 use Tobento\Service\View\PhpRenderer;
-use Tobento\Service\View\Dirs;
-use Tobento\Service\View\Dir;
 use Tobento\Service\View\Data;
 use Tobento\Service\View\Assets;
+use Tobento\Service\Dir\Dirs;
+use Tobento\Service\Dir\Dir;
 
 $view = new View(
     new PhpRenderer(
-        new Dirs([
-            new Dir('home/private/views/')
-        ])
+        new Dirs(
+            new Dir('home/private/views/'),
+        )
     ),
     new Data(),
     new Assets('home/public/src/', 'https://www.example.com/src/')
@@ -111,41 +110,6 @@ echo $view->render('about', ['title' => 'About', 'description' => 'Lorem ipsum']
 ```
 
 # Documentation
-
-## Directories
-
-Directories provides a simple way to organize your template files.
-
-```php
-use Tobento\Service\View\Dirs;
-use Tobento\Service\View\Dir;
-
-// Creating the directories.
-$dirs = new Dirs([]);
-$dirs->dir(dir: __DIR__.'/Front/', priority: 5, group: 'front');
-$dirs->dir(dir: __DIR__.'/Admin/', priority: 10, group: 'admin');
-
-$dirs->add(new Dir(__DIR__.'/Front/', 10, 'front'));
-
-// Iterating over the directories.
-foreach($dirs->all() as $dir) {
-    $directory = $dir->dir();
-    $priority = $dir->priority();
-    $group = $dir->group();
-}
-
-// Iterating over the directories using the default group.
-$dirs->defaultGroup('front');
-
-foreach($dirs->group()->all() as $dir) {
-    //
-}
-
-// Iterating over the directories using a specific group.
-foreach($dirs->group('admin')->all() as $dir) {
-    //
-}
-```
 
 ## Data
 
@@ -236,14 +200,21 @@ var_dump($assets->flushing($assets->render(group: 'footer')));
 
 ### PHP Renderer
 
-The PHP renderer uses native PHP language for views, no need to learn new syntax.
+The PHP renderer uses native PHP language for views, no need to learn new syntax.\
+Furthermore, it uses the [Dir Service](https://github.com/tobento-ch/service-dir) which provides a simple way to organize your template files.
 
 ```php
 use Tobento\Service\View\PhpRenderer;
-use Tobento\Service\View\Dirs;
 use Tobento\Service\View\ViewNotFoundException;
+use Tobento\Service\Dir\Dirs;
+use Tobento\Service\Dir\Dir;
 
-$renderer = new PhpRenderer(new Dirs());
+$dirs = new Dirs(
+    new Dir(dir: 'home/private/views/', priority: 5),
+    new Dir(dir: 'home/private/theme/views/', priority: 10),
+);
+
+$renderer = new PhpRenderer($dirs->sort());
 
 // Render a view.
 try {
