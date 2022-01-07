@@ -186,7 +186,7 @@ class TagAttributesTest extends TestCase
         $ta->add('data-foo', 'foo');
         
         $this->assertSame(
-            'data-foo=\'["bar","foo"]\'',
+            'data-foo=\'[&quot;bar&quot;,&quot;foo&quot;]\'',
             $ta->render()
         );
     }
@@ -198,7 +198,7 @@ class TagAttributesTest extends TestCase
         $ta->set('data-foo', ['bar' => 'bar']);
         
         $this->assertSame(
-            'data-foo=\'{"bar":"bar"}\'',
+            'data-foo=\'{&quot;bar&quot;:&quot;bar&quot;}\'',
             $ta->render()
         );
     }    
