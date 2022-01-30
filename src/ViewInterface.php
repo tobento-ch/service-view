@@ -116,5 +116,14 @@ interface ViewInterface
         int $flags = ENT_QUOTES,
         string $encoding = 'UTF-8',
         bool $double_encode = true
-    ): string;   
+    ): string;
+    
+    /**
+     * Add a macro.
+     *
+     * @param string $name The macro name.
+     * @param object|callable $macro
+     * @return static
+     */
+    public function addMacro(string $name, object|callable $macro): static;    
 }

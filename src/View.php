@@ -267,6 +267,20 @@ class View implements ViewInterface
     }
     
     /**
+     * Add a macro.
+     *
+     * @param string $name The macro name.
+     * @param object|callable $macro
+     * @return static
+     */
+    public function addMacro(string $name, object|callable $macro): static
+    {
+        $this->macro($name, $macro);
+        
+        return $this;
+    }
+    
+    /**
      * Dynamically bind parameters to the view.
      *
      * @param string $method
