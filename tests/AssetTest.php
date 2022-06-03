@@ -188,5 +188,30 @@ class AssetTest extends TestCase
             '<script src="inc/app.js" data-foo="foo" async></script>',
             $asset->render()
         );
-    }     
+    }
+    
+    public function testRenderMethodWithMulipleAttrOfSameKindShouldOverwrite()
+    {
+        $asset = new Asset('inc/app.js');
+        
+        $asset->attr('data-foo', 'foo');
+        $asset->attr('data-foo', 'bar');
+        
+        $this->assertSame(
+            '<script src="inc/app.js" data-foo="bar"></script>',
+            $asset->render()
+        );
+    }
+    
+    public function testRenderMethodWithAttrArrayValueShouldConvertToJson()
+    {
+        $asset = new Asset('inc/app.js');
+        
+        $asset->attr('data-foo', ['bar' => 'bar']);
+        
+        $this->assertSame(
+            '<script src="inc/app.js" data-foo=\'{&quot;bar&quot;:&quot;bar&quot;}\'></script>',
+            $asset->render()
+        );
+    }
 }
