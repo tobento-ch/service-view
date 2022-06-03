@@ -194,9 +194,9 @@ class Asset implements AssetInterface
         
         switch ($this->getFileInfo()->getExtension()) {
             case 'css':
-                return '<link href="'.$src.'" rel="stylesheet" type="text/css"'.$attributes.'>';
+                return '<link href="'.Str::esc($src).'" rel="stylesheet" type="text/css"'.$attributes.'>';
             case 'js':
-                return '<script src="'.$src.'"'.$attributes.'></script>';
+                return '<script src="'.Str::esc($src).'"'.$attributes.'></script>';
         }
 
         return '';
@@ -222,22 +222,22 @@ class Asset implements AssetInterface
         $attributes = [];
 
         foreach($this->attributes as $name => $value) {
-            
+
             if (is_int($name)) {
-                $attributes[] = $value;
+                $attributes[] = Str::esc($value);
                 continue;
             }
             
-            if (is_null($value) || $value === '') {
-                $attributes[] = $name;
+            if (is_null($value)) {
+                $attributes[] = Str::esc($name);
                 continue;
             }
             
             if (is_array($value)) {
-                $attributes[] = $name."='".json_encode($value)."'";
+                $attributes[] = Str::esc($name)."='".Str::esc(json_encode($value))."'";                
             } else {
-                $attributes[] = $name.'="'.$value.'"';
-            }
+                $attributes[] = Str::esc($name).'="'.Str::esc($value).'"';
+            }            
         }
                 
         return implode(' ', $attributes);    
