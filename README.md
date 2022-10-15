@@ -236,7 +236,7 @@ This renderer allows combining any number of other renderer. If the first render
 ```php
 use Tobento\Service\View\ChainRenderer;
 use Tobento\Service\View\PhpRenderer;
-use Tobento\Service\View\Dirs;
+use Tobento\Service\Dir\Dirs;
 use Tobento\Service\View\ViewNotFoundException;
 
 $renderer = new ChainRenderer(
@@ -261,7 +261,7 @@ if ($renderer->exists('view')) {
 
 ```php
 use Tobento\Service\View\PhpRenderer;
-use Tobento\Service\View\Dirs;
+use Tobento\Service\Dir\Dirs;
 use Tobento\Service\View\View;
 use Tobento\Service\View\Data;
 use Tobento\Service\View\Assets;
@@ -357,7 +357,7 @@ With macros you can easily extend the view class with any function you need.
 
 ```php
 use Tobento\Service\View\PhpRenderer;
-use Tobento\Service\View\Dirs;
+use Tobento\Service\Dir\Dirs;
 use Tobento\Service\View\View;
 use Tobento\Service\View\Data;
 use Tobento\Service\View\Assets;
@@ -385,11 +385,12 @@ Tags Attributes might be useful to collect attributes for a specific tag.
 
 ```php
 use Tobento\Service\View\PhpRenderer;
-use Tobento\Service\View\Dirs;
+use Tobento\Service\Dir\Dirs;
 use Tobento\Service\View\View;
 use Tobento\Service\View\Data;
 use Tobento\Service\View\Assets;
 use Tobento\Service\View\TagsAttributes;
+use Tobento\Service\Tag\AttributesInterface;
 
 $renderer = new PhpRenderer(new Dirs());
 
@@ -402,25 +403,11 @@ $view = new View($renderer, new Data(), $assets);
 
 $view->macro('attr', [new TagsAttributes(), 'get']);
 
-$view->attr('body')->add('class', 'foo');
-
-$view->attr('body')->set('class', 'foo');
-
-$view->attr('body')->merge(['data-foo' => 'bar']);
-
-var_dump($view->attr('body')->has('class'));
+var_dump($view->attr('body') instanceof AttributesInterface);
 // bool(true)
-
-var_dump($view->attr('body')->empty());
-// bool(false)
-
-$bodyAttributes = $view->attr('body')->all();
-var_dump($bodyAttributes);
-// array(2) { ["class"]=> string(3) "foo" ["data-foo"]=> string(3) "bar" }
-
-var_dump($view->attr('body')->render());
-// string(26) "class="foo" data-foo="bar""
 ```
+
+Check out the [Tag Service - Attributes Interface](https://github.com/tobento-ch/service-tag#attributes-interface) to learn more about it in general.
 
 # Credits
 
