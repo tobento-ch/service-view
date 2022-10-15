@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Tobento\Service\View;
 
+use Tobento\Service\Tag\AttributesInterface;
+use Tobento\Service\Tag\Attributes;
+
 /**
  * TagsAttributes
  */
@@ -21,7 +24,7 @@ class TagsAttributes
     /**
      * Create a new TagsAttributes
      *
-     * @param array $tags ['tagname' => TagAttributes]
+     * @param array<string, AttributesInterface> $tags
      */
     public function __construct(
         protected array $tags = []
@@ -42,21 +45,21 @@ class TagsAttributes
      * Get the tag attributes.
      *
      * @param string $tagname The tag name.
-     * @return TagAttributes
+     * @return AttributesInterface
      */
-    public function get(string $tagname): TagAttributes
+    public function get(string $tagname): AttributesInterface
     {
-        return $this->tags[$tagname] ??= new TagAttributes();
+        return $this->tags[$tagname] ??= new Attributes();
     }
     
     /**
      * Set a tags attributes
      *
      * @param string $tagname
-     * @param TagAttributes $attributes
+     * @param AttributesInterface $attributes
      * @return static $this
      */
-    public function set(string $tagname, TagAttributes $attributes): static
+    public function set(string $tagname, AttributesInterface $attributes): static
     {        
         $this->tags[$tagname] = $attributes;
         return $this;

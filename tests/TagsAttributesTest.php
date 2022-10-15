@@ -14,7 +14,8 @@ declare(strict_types=1);
 namespace Tobento\Service\View\Test;
 
 use PHPUnit\Framework\TestCase;
-use Tobento\Service\View\TagAttributes;
+use Tobento\Service\Tag\AttributesInterface;
+use Tobento\Service\Tag\Attributes;
 use Tobento\Service\View\TagsAttributes;
 
 /**
@@ -24,7 +25,7 @@ class TagsAttributesTest extends TestCase
 {    
     public function testCreateTagsAttributes()
     {
-        $body = (new TagAttributes())->set('data-foo', '1');
+        $body = (new Attributes())->set('data-foo', '1');
         
         $tags = new TagsAttributes([
             'body' => $body,
@@ -36,7 +37,7 @@ class TagsAttributesTest extends TestCase
     public function testHasMethod()
     {        
         $tags = new TagsAttributes([
-            'body' => new TagAttributes(),
+            'body' => new Attributes(),
         ]);
         
         $this->assertTrue($tags->has('body'));
@@ -45,7 +46,7 @@ class TagsAttributesTest extends TestCase
 
     public function testGetMethod()
     {
-        $body = (new TagAttributes())->set('data-foo', '1');
+        $body = (new Attributes())->set('data-foo', '1');
         
         $tags = new TagsAttributes([
             'body' => $body,
@@ -58,12 +59,12 @@ class TagsAttributesTest extends TestCase
     {        
         $tags = new TagsAttributes();
         
-        $this->assertInstanceof(TagAttributes::class, $tags->get('html'));
+        $this->assertInstanceof(AttributesInterface::class, $tags->get('html'));
     }
 
     public function testSetMethod()
     {
-        $body = (new TagAttributes())->set('data-foo', '1');
+        $body = (new Attributes())->set('data-foo', '1');
         
         $tags = new TagsAttributes();
         $tags->set('body', $body);

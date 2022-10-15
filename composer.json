@@ -23,7 +23,8 @@
     "require": {
         "php": ">=8.0",
         "tobento/service-macro": "^1.0",
-        "tobento/service-dir": "^1.0"
+        "tobento/service-dir": "^1.0",
+        "tobento/service-tag": "^1.0.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
