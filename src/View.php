@@ -25,6 +25,11 @@ class View implements ViewInterface
     use Macroable {
         __call as macroCall;
     }
+
+    /**
+     * @var DataInterface
+     */    
+    protected DataInterface $data;
     
     /**
      * @var array
@@ -65,7 +70,7 @@ class View implements ViewInterface
      */    
     public function __construct(
         protected RendererInterface $renderer,
-        protected ?DataInterface $data = null,
+        ?DataInterface $data = null,
         protected ?AssetsInterface $assets = null
     ) {
         $this->data = $data ?: new Data();
@@ -81,7 +86,7 @@ class View implements ViewInterface
     public function data(?array $data = null): static|DataInterface
     {
         if (is_null($data)) {
-            return $this->data ?: new Data();
+            return $this->data;
         }
         
         $this->data->add($data);
@@ -138,7 +143,7 @@ class View implements ViewInterface
         $data = $this->handleOnCallables($view, $data);
         
         // Add data as to share them.
-        $this->data()->add($data);
+        $this->data->add($data);
         
         // If it is an added view, get the view.
         $viewName = $this->views[$view] ?? $view;
@@ -309,7 +314,7 @@ class View implements ViewInterface
     protected function flushing(string $content): string
     {
         if ($this->renderLevel === 0) {
-            $content = $this->assets->flushing($content);
+            $content = $this->assets()->flushing($content);
             $this->once = [];
         }
         
