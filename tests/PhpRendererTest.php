@@ -92,9 +92,22 @@ class PhpRendererTest extends TestCase
         $renderer = new PhpRenderer($dirs);
         
         $this->assertTrue($renderer->exists('about'));
+        $this->assertFalse($renderer->exists('../about'));
         $this->assertTrue($renderer->exists('inc/footer'));
         $this->assertFalse($renderer->exists('inc/foo'));
         $this->assertFalse($renderer->exists(''));
         $this->assertFalse($renderer->exists('/'));
+    }
+    
+    public function testThrowsViewNotFoundExceptionIfViewIsNotWithinSpecifiedDirs()
+    {
+        $this->expectException(ViewNotFoundException::class);
+        
+        $dirs = new Dirs();
+        $dirs->dir(__DIR__.'/php-renderer/front/');
+        
+        $renderer = new PhpRenderer($dirs);
+        
+        $renderer->render('../about', ['title' => 'About']);
     }    
 }
