@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Tobento\Service\View;
 
 use Tobento\Service\Dir\DirsInterface;
+use Tobento\Service\Dir\DirInterface;
+use Tobento\Service\Filesystem\File;
 use Throwable;
 
 /**
@@ -29,7 +31,12 @@ class PhpRenderer implements RendererInterface
     /**
      * @var array
      */    
-    protected array $renderData = [];    
+    protected array $renderData = [];
+    
+    /**
+     * @var array
+     */    
+    protected array $verifiedViews = [];
 
     /**
      * Create a new PhpRenderer.
@@ -53,7 +60,7 @@ class PhpRenderer implements RendererInterface
         {            
             try {
                 
-                $ensuredView = $this->ensureView($dir->dir().$view.'.php');
+                $ensuredView = $this->ensureView($dir, $view);
 
                 if ($ensuredView) {
                     return $this->renderView($ensuredView, $data);            
@@ -77,7 +84,7 @@ class PhpRenderer implements RendererInterface
     {
         foreach($this->dirs->all() as $dir)
         {
-            if (!is_null($this->ensureView($dir->dir().$view.'.php'))) {
+            if (!is_null($this->ensureView($dir, $view))) {
                 return true;
             }
         }
@@ -133,11 +140,28 @@ class PhpRenderer implements RendererInterface
     /**
      * Ensure the view.
      *
+     * @param DirInterface $dir
      * @param string $view The view name.
      * @return null|string The view or null on failure.
      */
-    protected function ensureView(string $view): ?string
-    {        
-        return file_exists($view) ? $view : null;
-    }    
+    protected function ensureView(DirInterface $dir, string $view): ?string
+    {
+        $file = $dir->dir().$view.'.php';
+        
+        if (in_array($file, $this->verifiedViews)) {
+            return $file;
+        }
+        
+        $file = new File($file);
+        
+        if (!$file->isWithinDir($dir->dir())) {
+            return null;
+        }
+        
+        if (!$file->isFile()) {
+            return null;
+        }
+        
+        return $this->verifiedViews[] = $file->getFile();
+    }
 }
