@@ -118,5 +118,23 @@ class AssetsTest extends TestCase
         $assets->asset('inc/app2.js');
         
         $this->assertSame(3, count($assets->all()));
-    }    
+    }
+    
+    public function testClearMethod()
+    {
+        $assets = new Assets(
+            assetDir: 'home/public/src/',
+            assetUri: 'https://www.example.com/src/',
+        );
+        
+        $asset = new Asset('inc/styles.css');
+        
+        $assets->add($asset);
+        
+        $this->assertSame(1, count($assets->all()));
+        
+        $assets->clear();
+        
+        $this->assertSame(0, count($assets->all()));
+    }
 }

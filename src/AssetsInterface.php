@@ -64,4 +64,11 @@ interface AssetsInterface
      * @return array
      */
     public function all(): array;
+    
+    /**
+     * Clear all assets.
+     *
+     * @return static $this
+     */
+    public function clear(): static;
 }

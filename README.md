@@ -194,6 +194,9 @@ var_dump($assets->render(group: 'footer'));
 // Render the assets.
 var_dump($assets->flushing($assets->render(group: 'footer')));
 // string(57) "<script src="inc/app.js" data-foo="value" async></script>"
+
+// You might clear all assets.
+$assets->clear();
 ```
 
 ## Renderer

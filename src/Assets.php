@@ -135,6 +135,17 @@ class Assets implements AssetsInterface
     }
     
     /**
+     * Clear all assets.
+     *
+     * @return static $this
+     */
+    public function clear(): static
+    {
+        $this->assets = [];
+        return $this;
+    }
+    
+    /**
      * Render the asset group
      *
      * @param string $group The group.
