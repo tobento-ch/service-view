@@ -42,9 +42,19 @@ class View implements ViewInterface
     protected array $viewExists = [];    
     
     /**
-     * @var array The views callables on render.
-     */    
+     * @var array The views on to render.
+     */
     protected array $on = [];
+    
+    /**
+     * @var array<int, callable> The on callables.
+     */
+    protected static array $onCallables = [];
+    
+    /**
+     * @var int
+     */
+    protected static int $onCounter = 1;
 
     /**
      * @var array
@@ -180,7 +190,11 @@ class View implements ViewInterface
      */
     public function on(string $view, callable $callable): static
     {
-        $this->on[$view][] = $callable;
+        $id = static::$onCounter++;
+        
+        $this->on[$view][] = $id;
+        
+        static::$onCallables[$id] = $callable;
         
         return $this;
     }
@@ -327,18 +341,19 @@ class View implements ViewInterface
      * @param string $view The view name.
      * @param array $data The view data.
      * @return array The view data
-     */        
+     */
     protected function handleOnCallables(string $view, array $data = []): array
     {
         if (!isset($this->on[$view])) {
             return $data;
         }
         
-        foreach($this->on[$view] as $callable)
-        {            
-            $data = call_user_func_array($callable, [$data, $this]);
+        foreach($this->on[$view] as $id) {
+            if (isset(static::$onCallables[$id])) {
+                $data = call_user_func_array(static::$onCallables[$id], [$data, $this]);
+            }
         }
         
         return $data;
-    }        
+    }
 }
