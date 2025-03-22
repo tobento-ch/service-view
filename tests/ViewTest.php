@@ -231,6 +231,26 @@ class ViewTest extends TestCase
             $view->render('about.keyed')
         );
     }
+    
+    public function testOnMethodWithWildcard()
+    {
+        $view = $this->createView();
+        
+        $view->on('*', function(array $data, ViewInterface $view, string $key): array {
+            $data['title'] = 'TITLE';
+            return $data;
+        });
+        
+        $this->assertSame(
+            '<!DOCTYPE html><html><head><title>TITLE</title></head><body>About</body></html>',
+            $view->render('about')
+        );
+        
+        $this->assertSame(
+            '<!DOCTYPE html><html><head><title>TITLE</title></head><body>Team<footer>Footer</footer></body></html>',
+            $view->render('team')
+        );
+    }
 
     public function testExistsMethod()
     {
