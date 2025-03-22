@@ -308,6 +308,12 @@ $view->on('comments.writing', function(array $data, ViewInterface $view): array 
     return $data;
 });
 
+// On render any view using wildcard.
+$view->on('*', function(array $data, ViewInterface $view, string $key): array {
+    $data['key'] = 'value';
+    return $data;
+});
+
 // Get the assets
 $assets = $view->assets();
 
