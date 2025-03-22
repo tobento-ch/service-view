@@ -344,13 +344,19 @@ class View implements ViewInterface
      */
     protected function handleOnCallables(string $view, array $data = []): array
     {
-        if (!isset($this->on[$view])) {
-            return $data;
+        if (isset($this->on[$view])) {
+            foreach($this->on[$view] as $id) {
+                if (isset(static::$onCallables[$id])) {
+                    $data = call_user_func_array(static::$onCallables[$id], [$data, $this, $view]);
+                }
+            }
         }
         
-        foreach($this->on[$view] as $id) {
-            if (isset(static::$onCallables[$id])) {
-                $data = call_user_func_array(static::$onCallables[$id], [$data, $this]);
+        if (isset($this->on['*'])) {
+            foreach($this->on['*'] as $id) {
+                if (isset(static::$onCallables[$id])) {
+                    $data = call_user_func_array(static::$onCallables[$id], [$data, $this, $view]);
+                }
             }
         }
         
