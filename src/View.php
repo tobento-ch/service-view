@@ -13,13 +13,11 @@ declare(strict_types=1);
 
 namespace Tobento\Service\View;
 
-use Tobento\Service\Macro\Macroable;
-use InvalidArgumentException;
 use BadMethodCallException;
+use InvalidArgumentException;
+use Tobento\Service\Macro\Macroable;
+use Tobento\Service\Support\HtmlString;
 
-/**
- * View
- */
 class View implements ViewInterface
 {
     use Macroable {
@@ -282,6 +280,10 @@ class View implements ViewInterface
         string $encoding = 'UTF-8',
         bool $double_encode = true
     ): string {
+        if ($string instanceof HtmlString) {
+            return $string->toHtml();
+        }
+        
         return htmlspecialchars((string) $string, $flags, $encoding, $double_encode);
     }
     

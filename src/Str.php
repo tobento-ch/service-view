@@ -13,33 +13,29 @@ declare(strict_types=1);
 
 namespace Tobento\Service\View;
 
-use Stringable;
+use Tobento\Service\Support\HtmlString;
 
-/**
- * Str
- */
 class Str
 {    
     /**
      * Escapes string with htmlspecialchars.
      * 
-     * @param string|Stringable $string
+     * @param mixed $string
      * @param int $flags
      * @param string $encoding
      * @param bool $double_encode
      * @return string
      */
     public static function esc(
-        string|Stringable $string,
+        mixed $string,
         int $flags = ENT_QUOTES,
         string $encoding = 'UTF-8',
         bool $double_encode = true
     ): string {
-        
-        if ($string instanceof Stringable) {
-            $string = $string->__toString();
+        if ($string instanceof HtmlString) {
+            return $string->toHtml();
         }
         
-        return htmlspecialchars($string, $flags, $encoding, $double_encode);
+        return htmlspecialchars((string)$string, $flags, $encoding, $double_encode);
     }
 }
