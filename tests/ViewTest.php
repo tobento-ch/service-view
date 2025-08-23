@@ -24,6 +24,7 @@ use Tobento\Service\View\Assets;
 use Tobento\Service\View\AssetsInterface;
 use Tobento\Service\Dir\Dir;
 use Tobento\Service\Dir\Dirs;
+use Tobento\Service\Support\HtmlString;
 
 /**
  * ViewTest tests
@@ -319,6 +320,11 @@ class ViewTest extends TestCase
         $this->assertSame(
             '&lt;p&gt;Lorem&lt;/p&gt;',
             $view->esc('<p>Lorem</p>', ENT_QUOTES, 'UTF-8', true)
+        );
+        
+        $this->assertSame(
+            '<p>Lorem</p>',
+            $view->esc(new HtmlString('<p>Lorem</p>'))
         );
     }    
 }
