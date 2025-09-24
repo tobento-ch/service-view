@@ -97,10 +97,9 @@ class PhpRenderer implements RendererInterface
      *
      * @param string $view The view name.
      * @param array $data The view data.
-     *
-     * @throws ViewNotFoundException
-     *
      * @return string The view rendered.
+     * @throws ViewNotFoundException
+     * @psalm-suppress PossiblyUnusedParam
      */
     protected function renderView(string $view, array $data = []): string
     {
@@ -121,7 +120,7 @@ class PhpRenderer implements RendererInterface
                         
             $content = ob_get_clean();
 
-            return $content;
+            return (string)$content;
 
         } catch (ViewNotFoundException $e) {
             // ignore subviews not found.
