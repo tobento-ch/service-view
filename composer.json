@@ -1,6 +1,6 @@
 {
     "name": "tobento/service-view",
-    "version": "2.0",
+    "version": "2.0.1",
     "type": "library",
     "description": "A flexible PHP view system.",
     "keywords": [
