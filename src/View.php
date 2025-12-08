@@ -16,7 +16,7 @@ namespace Tobento\Service\View;
 use BadMethodCallException;
 use InvalidArgumentException;
 use Tobento\Service\Macro\Macroable;
-use Tobento\Service\Support\HtmlString;
+use Tobento\Service\Support\Htmlable;
 
 class View implements ViewInterface
 {
@@ -280,7 +280,7 @@ class View implements ViewInterface
         string $encoding = 'UTF-8',
         bool $double_encode = true
     ): string {
-        if ($string instanceof HtmlString) {
+        if ($string instanceof Htmlable) {
             return $string->toHtml();
         }
         

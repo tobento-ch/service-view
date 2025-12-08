@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tobento\Service\View;
 
-use Tobento\Service\Support\HtmlString;
+use Tobento\Service\Support\Htmlable;
 
 class Str
 {    
@@ -32,7 +32,7 @@ class Str
         string $encoding = 'UTF-8',
         bool $double_encode = true
     ): string {
-        if ($string instanceof HtmlString) {
+        if ($string instanceof Htmlable) {
             return $string->toHtml();
         }
         
