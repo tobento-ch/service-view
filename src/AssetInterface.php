@@ -21,6 +21,14 @@ use SplFileInfo;
 interface AssetInterface
 {
     /**
+     * Returns a new instance with the given file.
+     *
+     * @param string $file
+     * @return static
+     */
+    public function withFile(string $file): static;
+    
+    /**
      * Get the file
      *
      * @return string
@@ -41,6 +49,14 @@ interface AssetInterface
      * @return static $this
      */
     public function dir(string $dir): static;
+    
+    /**
+     * Returns a new instance with the given dir.
+     *
+     * @param string $dir
+     * @return static
+     */
+    public function withDir(string $dir): static;
 
     /**
      * Get the dir
@@ -56,6 +72,14 @@ interface AssetInterface
      * @return static $this
      */
     public function uri(string $uri): static;
+    
+    /**
+     * Returns a new instance with the given uri.
+     *
+     * @param string $uri
+     * @return static
+     */
+    public function withUri(string $uri): static;
 
     /**
      * Get the uri
@@ -74,6 +98,15 @@ interface AssetInterface
     public function attr(string $name, mixed $value = null): static;
 
     /**
+     * Returns a new instance with the given attr.
+     *
+     * @param string $name The attribute name
+     * @param mixed $value The attribute value
+     * @return static
+     */
+    public function withAttr(string $name, mixed $value = null): static;
+    
+    /**
      * Get the attributes
      *
      * @return array
@@ -87,6 +120,14 @@ interface AssetInterface
      * @return static $this
      */
     public function group(string $group): static;
+    
+    /**
+     * Returns a new instance with the given group.
+     *
+     * @param string $group
+     * @return static
+     */
+    public function withGroup(string $group): static;
 
     /**
      * Get the group.
@@ -103,6 +144,14 @@ interface AssetInterface
      */
     public function order(int $order): static;    
 
+    /**
+     * Returns a new instance with the given order.
+     *
+     * @param int $order
+     * @return static
+     */
+    public function withOrder(int $order): static;
+    
     /**
      * Get the order.
      *

@@ -34,7 +34,7 @@ class Asset implements AssetInterface
      * @param array $attributes The attributes
      * @param int $order The priority
      * @param string $group The group
-     */    
+     */
     public function __construct(
         protected string $file,
         protected string $dir = '',
@@ -44,6 +44,19 @@ class Asset implements AssetInterface
         protected string $group = 'default',
     ) {}
 
+    /**
+     * Returns a new instance with the given file.
+     *
+     * @param string $file
+     * @return static
+     */
+    public function withFile(string $file): static
+    {
+        $new = clone $this;
+        $new->file = $file;
+        return $new;
+    }
+    
     /**
      * Get the file
      *
@@ -61,11 +74,18 @@ class Asset implements AssetInterface
      */
     public function getFileInfo(): SplFileInfo
     {
-        if (is_null($this->fileInfo)) {
-            $this->fileInfo = new SplFileInfo($this->dir.$this->file);
+        if (!is_null($this->fileInfo)) {
+            return $this->fileInfo;
         }
         
-        return $this->fileInfo;
+        $file = $this->file;
+
+        // Remove query string (e.g., ?v=12345)
+        if (($pos = strpos($file, '?')) !== false) {
+            $file = substr($file, 0, $pos);
+        }
+
+        return $this->fileInfo = new SplFileInfo($this->dir.$file);
     }
     
     /**
@@ -78,6 +98,19 @@ class Asset implements AssetInterface
     {
         $this->dir = $dir;
         return $this;
+    }
+    
+    /**
+     * Returns a new instance with the given dir.
+     *
+     * @param string $dir
+     * @return static
+     */
+    public function withDir(string $dir): static
+    {
+        $new = clone $this;
+        $new->dir = $dir;
+        return $new;
     }
 
     /**
@@ -100,6 +133,19 @@ class Asset implements AssetInterface
     {
         $this->uri = $uri;
         return $this;
+    }
+    
+    /**
+     * Returns a new instance with the given uri.
+     *
+     * @param string $uri
+     * @return static
+     */
+    public function withUri(string $uri): static
+    {
+        $new = clone $this;
+        $new->uri = $uri;
+        return $new;
     }
 
     /**
@@ -124,6 +170,20 @@ class Asset implements AssetInterface
         $this->attributes[$name] = $value;
         return $this;
     }
+    
+    /**
+     * Returns a new instance with the given attr.
+     *
+     * @param string $name The attribute name
+     * @param mixed $value The attribute value
+     * @return static
+     */
+    public function withAttr(string $name, mixed $value = null): static
+    {
+        $new = clone $this;
+        $new->attributes[$name] = $value;
+        return $new;
+    }
 
     /**
      * Get the attributes
@@ -146,6 +206,19 @@ class Asset implements AssetInterface
         $this->group = $group;
         return $this;
     }
+    
+    /**
+     * Returns a new instance with the given group.
+     *
+     * @param string $group
+     * @return static
+     */
+    public function withGroup(string $group): static
+    {
+        $new = clone $this;
+        $new->group = $group;
+        return $new;
+    }
 
     /**
      * Get the group.
@@ -167,7 +240,20 @@ class Asset implements AssetInterface
     {
         $this->order = $order;
         return $this;
-    }    
+    }
+    
+    /**
+     * Returns a new instance with the given order.
+     *
+     * @param int $order
+     * @return static
+     */
+    public function withOrder(int $order): static
+    {
+        $new = clone $this;
+        $new->order = $order;
+        return $new;
+    }
 
     /**
      * Get the order.
@@ -183,7 +269,7 @@ class Asset implements AssetInterface
      * Get the evaluated contents of the asset
      *
      * @return string
-     */    
+     */
     public function render(): string
     {
         $src = $this->uri.$this->file;
@@ -206,7 +292,7 @@ class Asset implements AssetInterface
      * To string
      *
      * @return string
-     */    
+     */
     public function __toString(): string
     {
         return $this->render();
@@ -216,7 +302,7 @@ class Asset implements AssetInterface
      * Get the attributes as string.
      *
      * @return string
-     */    
+     */
     protected function attributesAsString(): string
     {
         $attributes = [];
@@ -241,5 +327,13 @@ class Asset implements AssetInterface
         }
                 
         return implode(' ', $attributes);    
-    }                
+    }
+    
+    /**
+     * Clone.
+     */
+    public function __clone()
+    {
+        $this->fileInfo = null;
+    }
 }
