@@ -1,6 +1,6 @@
 {
     "name": "tobento/service-view",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "type": "library",
     "description": "A flexible PHP view system.",
     "keywords": [
@@ -23,16 +23,21 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.4",
+        "psr/log": "^3.0",
         "tobento/service-macro": "^2.0",
         "tobento/service-filesystem": "^2.0",
         "tobento/service-dir": "^2.0",
         "tobento/service-support": "^2.0",
         "tobento/service-tag": "^2.0"
     },
+    "suggest": {
+        "tobento/service-minify": "Required for AssetsHandler class"
+    },
     "require-dev": {
         "phpunit/phpunit": "^12.3",
         "vimeo/psalm": "^6.13",
-        "twig/twig": "^3.21"
+        "twig/twig": "^3.21",
+        "tobento/service-minify": "^2.0"
     },    
     "autoload": {
         "psr-4": {
