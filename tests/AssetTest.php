@@ -18,9 +18,6 @@ use Tobento\Service\View\Asset;
 use Tobento\Service\View\AssetInterface;
 use SplFileInfo;
 
-/**
- * AssetTest tests
- */
 class AssetTest extends TestCase
 {
     public function testCreateAsset()
@@ -38,6 +35,17 @@ class AssetTest extends TestCase
         
         $this->assertInstanceOf(AssetInterface::class, $asset);
     }
+
+    public function testWithFileMethod()
+    {
+        $asset = new Asset('inc/styles.css');
+        
+        $assetNew = $asset->withFile('inc/stylesNew.css');
+        
+        $this->assertNotSame($asset, $assetNew);
+        
+        $this->assertSame('inc/stylesNew.css', $assetNew->getFile());
+    }
     
     public function testGetFileMethod()
     {
@@ -51,6 +59,16 @@ class AssetTest extends TestCase
         $asset = new Asset('inc/styles.css');
         
         $this->assertInstanceOf(SplFileInfo::class, $asset->getFileInfo());
+    }
+    
+    public function testWithDirMethod()
+    {
+        $asset = new Asset('inc/styles.css');
+        $assetNew = $asset->withDir('new/dir/');
+
+        $this->assertNotSame($asset, $assetNew);
+        $this->assertSame('new/dir/', $assetNew->getDir());
+        $this->assertSame($asset->getDir(), ''); // original unchanged
     }
     
     public function testGetDirMethod()
@@ -67,6 +85,16 @@ class AssetTest extends TestCase
         $asset->dir('foo/bar');
         
         $this->assertSame('foo/bar', $asset->getDir());
+    }
+    
+    public function testWithUriMethod()
+    {
+        $asset = new Asset('inc/styles.css');
+        $assetNew = $asset->withUri('/assets/');
+
+        $this->assertNotSame($asset, $assetNew);
+        $this->assertSame('/assets/', $assetNew->getUri());
+        $this->assertSame($asset->getUri(), ''); // original unchanged
     }
     
     public function testGetUriMethod()
@@ -97,6 +125,16 @@ class AssetTest extends TestCase
         
         $this->assertSame(['async'], $asset->getAttributes());
     }
+    
+    public function testWithAttrMethod()
+    {
+        $asset = new Asset('inc/styles.css');
+        $assetNew = $asset->withAttr('defer', true);
+
+        $this->assertNotSame($asset, $assetNew);
+        $this->assertSame(['defer' => true], $assetNew->getAttributes());
+        $this->assertSame([], $asset->getAttributes()); // original unchanged
+    }
 
     public function testAttrMethod()
     {
@@ -113,6 +151,16 @@ class AssetTest extends TestCase
         );
     }
     
+    public function testWithGroupMethod()
+    {
+        $asset = new Asset('inc/styles.css');
+        $assetNew = $asset->withGroup('footer');
+
+        $this->assertNotSame($asset, $assetNew);
+        $this->assertSame('footer', $assetNew->getGroup());
+        $this->assertSame('default', $asset->getGroup()); // original unchanged
+    }
+    
     public function testGetGroupMethod()
     {
         $asset = new Asset('inc/styles.css');
@@ -127,6 +175,16 @@ class AssetTest extends TestCase
         $asset->group('footer');
         
         $this->assertSame('footer', $asset->getGroup());
+    }
+    
+    public function testWithOrderMethod()
+    {
+        $asset = new Asset('inc/styles.css');
+        $assetNew = $asset->withOrder(10);
+
+        $this->assertNotSame($asset, $assetNew);
+        $this->assertSame(10, $assetNew->getOrder());
+        $this->assertSame(0, $asset->getOrder()); // original unchanged
     }
     
     public function testGetOrderMethod()
