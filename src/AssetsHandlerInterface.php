@@ -21,8 +21,8 @@ interface AssetsHandlerInterface
     /**
      * Handle the assets.
      *
-     * @param array $assets The assets
-     * @return array The assets
+     * @param array<string, AssetInterface> $assets The assets
+     * @return array<string, AssetInterface> The assets
      */
     public function handle(array $assets): array;
 
