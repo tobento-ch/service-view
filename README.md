@@ -17,6 +17,7 @@ It brings together rendering, shared data, and asset management into a unified a
         - [PHP Renderer](#php-renderer)
         - [Chain Renderer](#chain-renderer)
     - [View](#view)
+        - [Usage](#usage)
         - [Template](#template)
         - [Macros](#macros)
         - [Tags Attributes Macro](#tags-attributes-macro)
@@ -458,6 +459,8 @@ if ($renderer->exists('view')) {
 
 ## View
 
+### Usage
+
 The `View` class ties everything together: a renderer, shared data, and asset management.  
 It provides a simple API for rendering templates, passing data, registering view aliases, and hooking into the rendering process with event callbacks.
 
@@ -495,20 +498,15 @@ $view->add(key: 'inc.view', view: 'inc/view');
 // Render the view added by key.
 echo $view->render(view: 'inc.view', data: ['key' => 'value']);
 
+// Auto render a view before or after another view.
+$view->autoRender(
+    view: 'inc/meta-tags',
+    on: 'inc/head',
+    apply: 'after'
+);
+
 // On render a specific view.
 $view->on('inc.view', function(array $data, ViewInterface $view): array {
-    $data['key'] = 'value';
-    return $data;
-});
-
-$view->on('comments.writing', function(array $data, ViewInterface $view): array {
-    $view->add(key: 'comments.writing', view: 'comments/writing');
-    $data['text'] = 'Lorem ipsum';
-    return $data;
-});
-
-// On render any view using wildcard.
-$view->on('*', function(array $data, ViewInterface $view, string $key): array {
     $data['key'] = 'value';
     return $data;
 });
@@ -518,6 +516,79 @@ $assets = $view->assets();
 
 // Add an asset
 $view->asset('app.css');
+```
+
+#### Auto Rendering Views
+
+You may automatically render a view before or after another view is rendered.  
+This is useful for injecting reusable UI fragments (meta tags, banners, notifications, tracking scripts) without modifying templates.
+
+```php
+$view->autoRender(
+    // The view to render automatically
+    view: 'inc/meta-tags',
+    
+    // The view that triggers the auto-render
+    on: 'inc/head',
+    
+    // Render 'before' or 'after' the triggering view
+    apply: 'after'
+);
+```
+
+#### View Callbacks (on)
+
+You may hook into the rendering process of a specific view and modify its data before it is rendered.  
+This is useful for preparing dynamic data, registering view aliases, or conditionally preventing rendering.
+
+```php
+use Tobento\Service\ViewInterface;
+
+$view->on(
+    // The view key to listen
+    key: 'inc/view',
+
+    // The callback executed before the view is rendered
+    callback: function(array $data, ViewInterface $view): array {
+
+        // Modify or add data passed to the view
+        $data['title'] = 'Example Title';
+
+        // Return the modified data
+        return $data;
+    }
+);
+```
+
+**Wildcard Example**
+
+```php
+use Tobento\Service\ViewInterface;
+
+$view->on(
+    key: '*',
+    callback: function(array $data, ViewInterface $view, string $key): array {
+        $data['global'] = 'applied to all views';
+        return $data;
+    }
+);
+```
+
+**Example with key and add()**
+
+This example registers an alias so that rendering `comments.writing` will load the `comments/writing` view.
+
+```php
+use Tobento\Service\ViewInterface;
+
+$view->on('comments.writing', function(array $data, ViewInterface $view): array {
+    $view->add(key: 'comments.writing', view: 'comments/writing');
+    $data['text'] = 'Lorem ipsum';
+    return $data;
+});
+
+echo $this->render('comments.writing');
+// will render comments/writing view
 ```
 
 ### Template
