@@ -182,6 +182,62 @@ class ViewTest extends TestCase
         );
     }
     
+    public function testAutoRenderAfter()
+    {
+        $view = $this->createView();
+
+        // Automatically render meta-tags after head
+        $view->autoRender(
+            view: 'inc/meta-tags',
+            on: 'inc/head',
+            apply: 'after'
+        );
+
+        $this->assertSame(
+            '<!DOCTYPE html><html><head><title>About</title><meta name="description" content="Meta Tags"></head><body>About</body></html>',
+            $view->render('about', ['title' => 'About'])
+        );
+    }
+
+    public function testAutoRenderBefore()
+    {
+        $view = $this->createView();
+
+        // Automatically render meta-tags before head
+        $view->autoRender(
+            view: 'inc/meta-tags',
+            on: 'inc/head',
+            apply: 'before'
+        );
+
+        $this->assertSame(
+            '<!DOCTYPE html><html><head><meta name="description" content="Meta Tags"><title>About</title></head><body>About</body></html>',
+            $view->render('about', ['title' => 'About'])
+        );
+    }
+
+    public function testAutoRenderWithOnCallback()
+    {
+        $view = $this->createView();
+
+        // Prepare data for the auto-rendered view
+        $view->on('inc/meta-tags', function(array $data, ViewInterface $view): array {
+            $data['meta'] = 'Dynamic Meta';
+            return $data;
+        });
+
+        $view->autoRender(
+            view: 'inc/meta-tags',
+            on: 'inc/head',
+            apply: 'after'
+        );
+
+        $this->assertSame(
+            '<!DOCTYPE html><html><head><title>About</title><meta name="description" content="Meta Tags">Dynamic Meta</head><body>About</body></html>',
+            $view->render('about', ['title' => 'About'])
+        );
+    }
+    
     public function testOnMethod()
     {
         $view = $this->createView();
@@ -326,5 +382,5 @@ class ViewTest extends TestCase
             '<p>Lorem</p>',
             $view->esc(new HtmlString('<p>Lorem</p>'))
         );
-    }    
+    }
 }
