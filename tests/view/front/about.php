@@ -1,1 +1,1 @@
-<!DOCTYPE html><html><head><title><?= $title ?></title></head><body>About</body></html>
+<!DOCTYPE html><html><head><?= $view->render('inc/head') ?></head><body>About</body></html>
