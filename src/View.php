@@ -37,7 +37,12 @@ class View implements ViewInterface
     /**
      * @var array The view exists cached.
      */    
-    protected array $viewExists = [];    
+    protected array $viewExists = [];
+
+    /**
+     * @var array The views to auto render.
+     */
+    protected array $autoRender = [];
     
     /**
      * @var array The views on to render.
@@ -171,14 +176,34 @@ class View implements ViewInterface
         } catch (ViewNotFoundException $e) {
             $content = '';
         }
-                    
+        
+        $content = $this->applyAutoRender($viewName, $content);
+        
         unset($this->rendering[$view]);
         
         $this->renderLevel--;
         
         return $this->flushing($content);
     }
+
+    /**
+     * Registers a view to be automatically applied when another view is rendered.
+     *
+     * @param string $view The view to render automatically.
+     * @param string $on The view name that triggers the auto render.
+     * @param string $apply Apply the view 'before' or 'after' the target output.
+     * @return static
+     */
+    public function autoRender(string $view, string $on, string $apply = 'after'): static
+    {
+        $this->autoRender[$on][] = [
+            'view' => $view,
+            'apply' => $apply,
+        ];
         
+        return $this;
+    }
+    
     /**
      * On render view.
      *
@@ -363,5 +388,33 @@ class View implements ViewInterface
         }
         
         return $data;
+    }
+    
+    /**
+     * Applies all auto-render rules for the given view by prepending or appending
+     * their rendered output to the provided content.
+     *
+     * @param string $view The view being rendered.
+     * @param string $content The rendered content of the view.
+     * @return string The modified content after applying auto-render rules.
+     */
+    protected function applyAutoRender(string $view, string $content): string
+    {
+        if (!isset($this->autoRender[$view])) {
+            return $content;
+        }
+
+        foreach ($this->autoRender[$view] as $item) {
+
+            $injected = $this->render($item['view']);
+
+            if ($item['apply'] === 'before') {
+                $content = $injected . $content;
+            } else {
+                $content .= $injected;
+            }
+        }
+
+        return $content;
     }
 }

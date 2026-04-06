@@ -52,7 +52,17 @@ interface ViewInterface
      * @return string The view rendered.
      */
     public function render(string $view, array $data = []): string;
-        
+
+    /**
+     * Registers a view to be automatically applied when another view is rendered.
+     *
+     * @param string $view The view to render automatically.
+     * @param string $on The view name that triggers the auto render.
+     * @param string $apply Apply the view 'before' or 'after' the target output.
+     * @return static
+     */
+    public function autoRender(string $view, string $on, string $apply = 'after'): static;
+    
     /**
      * On render view.
      *
