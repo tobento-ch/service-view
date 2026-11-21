@@ -149,6 +149,10 @@ class AssetsHandler implements AssetsHandlerInterface
      */
     public function handle(array $assets): array
     {
+        // Html assets have no file to process:
+        $htmlAssets = array_filter($assets, static fn (AssetInterface $asset): bool => $asset instanceof HtmlAsset);
+        $assets = array_diff_key($assets, $htmlAssets);
+        
         if (!empty($this->replace)) {
             $assets = $this->replaceAssets($assets, $this->replace);
         }
@@ -166,6 +170,14 @@ class AssetsHandler implements AssetsHandlerInterface
         $assets = $this->minifyAssets($assets, $skip);
         
         $assets = $this->modifyAssetsUri($assets);
+        
+        // Add the html assets back, keeping the order:
+        $assets = $assets + $htmlAssets;
+        
+        uasort(
+            $assets,
+            static fn (AssetInterface $a, AssetInterface $b): int => $b->getOrder() <=> $a->getOrder()
+        );
         
         return $assets;
     }
@@ -661,6 +673,12 @@ class AssetsHandler implements AssetsHandlerInterface
     {
         foreach ($assets as $key => $asset) {
             $version = $this->generateVersionHash($asset);
+            
+            // no version if the file does not exist (yet):
+            if ($version === '') {
+                continue;
+            }
+            
             $assets[$key] = $asset->withFile(sprintf('%s?v=%s', $asset->getFile(), $version));
         }
         
