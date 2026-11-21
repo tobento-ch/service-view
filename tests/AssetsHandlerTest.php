@@ -23,6 +23,7 @@ use Tobento\Service\View\Asset;
 use Tobento\Service\View\AssetInterface;
 use Tobento\Service\View\AssetsHandler;
 use Tobento\Service\View\AssetsHandlerInterface;
+use Tobento\Service\View\HtmlAsset;
 
 class AssetsHandlerTest extends TestCase
 {
@@ -626,6 +627,58 @@ class AssetsHandlerTest extends TestCase
             'css/style.css',
             $result['css/style.css']->getFile()
         );
+    }
+    
+    public function testHtmlAssetsAreNotProcessed()
+    {
+        $handler = $this->createAssetsHandler();
+        
+        $htmlAsset = new HtmlAsset(html: '<script type="application/ld+json">{"@type":"Article"}</script>', name: 'article');
+        
+        $assets = $this->createAssets(
+            $this->createAsset('js/app.js', "console.log('hi');"),
+            $htmlAsset
+        );
+        
+        $result = $handler->handle($assets);
+        
+        $this->assertSame($htmlAsset, $result['article']);
+        $this->assertSame('article', $result['article']->getFile());
+        $this->assertSame('', $result['article']->getUri());
+        
+        // file assets are still processed:
+        $this->assertMatchesRegularExpression(
+            '#^js/app\.js\?v=[a-f0-9]+$#',
+            $result['js/app.js']->getFile()
+        );
+    }
+    
+    public function testOrderIsKeptWithHtmlAssets()
+    {
+        $handler = $this->createAssetsHandler();
+        
+        $assets = $this->createAssets(
+            $this->createAsset('js/app.js', "console.log('hi');")->order(5),
+            new HtmlAsset(html: '<p>First</p>', name: 'first')->order(10),
+            new HtmlAsset(html: '<p>Last</p>', name: 'last')->order(1)
+        );
+        
+        $result = $handler->handle($assets);
+        
+        $this->assertSame(['first', 'js/app.js', 'last'], array_keys($result));
+    }
+    
+    public function testAssetIsNotVersionedIfFileDoesNotExist()
+    {
+        $handler = $this->createAssetsHandler();
+        
+        $assets = $this->createAssets(
+            new Asset(file: 'js/missing.js')
+        );
+        
+        $result = $handler->handle($assets);
+        
+        $this->assertSame('js/missing.js', $result['js/missing.js']->getFile());
     }
     
     public function testAssetIsRebuiltWhenSourceFileIsNewer()
