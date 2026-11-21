@@ -17,6 +17,7 @@ use BadMethodCallException;
 use InvalidArgumentException;
 use Tobento\Service\Macro\Macroable;
 use Tobento\Service\Support\Htmlable;
+use Stringable;
 
 class View implements ViewInterface
 {
@@ -288,7 +289,23 @@ class View implements ViewInterface
     public function asset(string $file): AssetInterface
     {        
         return $this->assets()->asset($file);
-    }    
+    }
+    
+    /**
+     * Add and get an html asset, e.g. JSON-LD.
+     *
+     * @param Htmlable|Stringable|string $html
+     * @param null|string $name A name to replace an html asset with the same name. If null, it is always added.
+     * @return AssetInterface
+     */
+    public function htmlAsset(Htmlable|Stringable|string $html, null|string $name = null): AssetInterface
+    {
+        $asset = new HtmlAsset(html: $html, name: $name);
+        
+        $this->assets()->add($asset);
+        
+        return $asset;
+    }
 
     /**
      * Escapes html with htmlspecialchars.

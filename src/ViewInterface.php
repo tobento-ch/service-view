@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Tobento\Service\View;
 
+use Stringable;
+use Tobento\Service\Support\Htmlable;
+
 /**
  * Views interface
  */
@@ -111,6 +114,15 @@ interface ViewInterface
      * @return AssetInterface
      */        
     public function asset(string $file): AssetInterface;
+    
+    /**
+     * Add and get an html asset, e.g. JSON-LD.
+     *
+     * @param Htmlable|Stringable|string $html
+     * @param null|string $name A name to replace an html asset with the same name. If null, it is always added.
+     * @return AssetInterface
+     */
+    public function htmlAsset(Htmlable|Stringable|string $html, null|string $name = null): AssetInterface;
 
     /**
      * Escapes html with htmlspecialchars.
