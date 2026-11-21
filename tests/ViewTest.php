@@ -22,6 +22,7 @@ use Tobento\Service\View\PhpRenderer;
 use Tobento\Service\View\AssetInterface;
 use Tobento\Service\View\Assets;
 use Tobento\Service\View\AssetsInterface;
+use Tobento\Service\View\HtmlAsset;
 use Tobento\Service\Dir\Dir;
 use Tobento\Service\Dir\Dirs;
 use Tobento\Service\Support\HtmlString;
@@ -366,6 +367,49 @@ class ViewTest extends TestCase
         $this->assertSame(
             '<!DOCTYPE html><html><head><title>Assets</title></head><body><script src="https://www.example.com/src/app.js"></script><script src="https://www.example.com/src/service/service.js"></script></body></html>',
             $view->render('assets')
+        );
+    }
+    
+    public function testHtmlAssetMethod()
+    {
+        $view = $this->createView();
+        
+        $asset = $view->htmlAsset('<p>Lorem</p>');
+        
+        $this->assertInstanceof(HtmlAsset::class, $asset);
+        $this->assertSame($asset, $view->assets()->all()[$asset->getFile()]);
+    }
+    
+    public function testHtmlAssetsAreRenderedWithAssets()
+    {
+        $view = $this->createView();
+        
+        $view->asset('app.css');
+        $view->htmlAsset('<script type="application/ld+json">{"@type":"Article"}</script>')->order(5);
+        $view->htmlAsset(new HtmlString('<p>Footer</p>'))->group('footer');
+        
+        $assets = $view->assets();
+        
+        $this->assertSame(
+            '<head><script type="application/ld+json">{"@type":"Article"}</script><link href="https://www.example.com/src/app.css" rel="stylesheet" type="text/css"></head><body><p>Footer</p></body>',
+            $assets->flushing('<head>'.$assets->render().'</head><body>'.$assets->render('footer').'</body>')
+        );
+    }
+    
+    public function testHtmlAssetsWithSameNameAreReplaced()
+    {
+        $view = $this->createView();
+        
+        $view->htmlAsset('<p>First</p>', name: 'organization');
+        $view->htmlAsset('<p>Second</p>', name: 'organization');
+        $view->htmlAsset('<p>Unnamed</p>');
+        $view->htmlAsset('<p>Unnamed</p>');
+        
+        $assets = $view->assets();
+        
+        $this->assertSame(
+            '<p>Second</p><p>Unnamed</p><p>Unnamed</p>',
+            $assets->flushing($assets->render())
         );
     }
     
