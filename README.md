@@ -12,6 +12,7 @@ It brings together rendering, shared data, and asset management into a unified a
 - [Documentation](#documentation)
 	- [Data](#data)
 	- [Assets](#assets)
+        - [Html Assets](#html-assets)
         - [Assets Handler](#assets-handler)
     - [Renderer](#renderer)
         - [PHP Renderer](#php-renderer)
@@ -152,8 +153,8 @@ $allData = $data->rename(['key' => 'newKey'])->add(['bar' => 'foo'])->all();
 
 ## Assets
 
-The `Assets` class provides a convenient way to register, organize, and render assets such as CSS, JavaScript, or any other file-based resources your application needs.  
-It acts as a lightweight collection where each asset can define its own file path, directory, URI, attributes, group, and render order.
+The `Assets` class provides a convenient way to register, organize, and render assets such as CSS, JavaScript, or any other asset implementation such as [Html Assets](#html-assets).  
+It acts as a lightweight collection where each asset can define its own group and render order, and file assets their own file path, directory, URI and attributes.
 
 You can also attach an `AssetsHandlerInterface` implementation to enable advanced features like minification, combining, or rewriting imports.  
 By default, assets are only collected and rendered as placeholders until you flush them.
@@ -213,6 +214,91 @@ var_dump($assets->flushing($assets->render(group: 'footer')));
 // You might clear all assets.
 $assets->clear();
 ```
+
+### Html Assets
+
+Html assets render html instead of a file, e.g. JSON-LD structured data. They are collected and rendered with the other assets of their group.
+
+```php
+use Tobento\Service\View\Assets;
+use Tobento\Service\View\HtmlAsset;
+use Tobento\Service\Support\HtmlString;
+
+$assets = new Assets(
+    assetDir: 'home/public/src/',
+    assetUri: 'https://www.example.com/src/'
+);
+
+$assets->asset(file: 'inc/styles.css');
+
+// Adding html assets
+$assets->add(new HtmlAsset(
+    // string, Stringable or Tobento\Service\Support\Htmlable
+    html: '<script type="application/ld+json">{"@type":"Organization","name":"Example"}</script>',
+    // An asset with the same name is replaced. If null, it is always added.
+    name: 'organization',
+    order: 5,
+    group: 'default',
+));
+
+$assets->add(new HtmlAsset(html: new HtmlString('<p>Lorem</p>'))->group('footer'));
+
+var_dump($assets->flushing($assets->render()));
+// string(174) "<script type="application/ld+json">{"@type":"Organization","name":"Example"}</script><link href="https://www.example.com/src/inc/styles.css" rel="stylesheet" type="text/css">"
+```
+
+The html is only rendered when flushing the assets. So an object implementing `Htmlable` may still collect data until the page is rendered.
+
+Html assets are not processed by the [Assets Handler](#assets-handler).
+
+**Using the view**
+
+In templates, you may add html assets using the `htmlAsset` method:
+
+```php
+<?php
+$view->htmlAsset(
+    html: new ArticleMicrodata($article),
+    name: 'article', // optional
+);
+?>
+```
+
+```php
+use Tobento\Service\Support\Htmlable;
+
+final class ArticleMicrodata implements Htmlable
+{
+    public function __construct(
+        private ArticleInterface $article,
+    ) {}
+    
+    public function toHtml(): string
+    {
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $this->article->title(),
+        ];
+        
+        $json = json_encode(
+            $data,
+            JSON_HEX_TAG | JSON_HEX_AMP | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR
+        );
+        
+        return '<script type="application/ld+json">'.$json.'</script>';
+    }
+}
+```
+
+Do not escape the data with `htmlspecialchars` or `$view->esc()`, as html entities are not decoded inside a script tag. Encode it with these flags instead:
+
+- `JSON_HEX_TAG` encodes `<` and `>`, so no data can end the script tag.
+- `JSON_HEX_AMP` encodes `&`.
+- `JSON_INVALID_UTF8_SUBSTITUTE` replaces invalid UTF-8 characters instead of failing.
+- `JSON_THROW_ON_ERROR` throws an exception on any other error, instead of returning `false`.
+
+As the html is rendered when flushing the assets, an exception thrown by `toHtml()` is thrown when rendering the view.
 
 ### Assets Handler
 
@@ -516,6 +602,9 @@ $assets = $view->assets();
 
 // Add an asset
 $view->asset('app.css');
+
+// Add an html asset, e.g. JSON-LD
+$view->htmlAsset('<script type="application/ld+json">{"@type":"Article"}</script>');
 ```
 
 #### Auto Rendering Views
@@ -542,7 +631,7 @@ You may hook into the rendering process of a specific view and modify its data b
 This is useful for preparing dynamic data, registering view aliases, or conditionally preventing rendering.
 
 ```php
-use Tobento\Service\ViewInterface;
+use Tobento\Service\View\ViewInterface;
 
 $view->on(
     // The view key to listen
@@ -563,7 +652,7 @@ $view->on(
 **Wildcard Example**
 
 ```php
-use Tobento\Service\ViewInterface;
+use Tobento\Service\View\ViewInterface;
 
 $view->on(
     key: '*',
@@ -579,7 +668,7 @@ $view->on(
 This example registers an alias so that rendering `comments.writing` will load the `comments/writing` view.
 
 ```php
-use Tobento\Service\ViewInterface;
+use Tobento\Service\View\ViewInterface;
 
 $view->on('comments.writing', function(array $data, ViewInterface $view): array {
     $view->add(key: 'comments.writing', view: 'comments/writing');
@@ -587,7 +676,7 @@ $view->on('comments.writing', function(array $data, ViewInterface $view): array 
     return $data;
 });
 
-echo $this->render('comments.writing');
+echo $view->render('comments.writing');
 // will render comments/writing view
 ```
 
